@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Github, Linkedin, Twitter, Mail } from 'lucide-react';
+import { Send, Github, Linkedin, Mail, Instagram } from 'lucide-react';
 import { toast } from 'sonner';
 
-const OWNER_EMAIL = 'sp0137466@gmail.com';
+const OWNER_EMAIL = 'shaniprajapati630@gmail.com';
 
 const emailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
   OWNER_EMAIL
 )}&su=${encodeURIComponent('')}&body=${encodeURIComponent('')}`;
 
 const socials = [
-  { icon: Github, href: 'https://github.com', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-  { icon: Twitter, href: 'https://twitter.com', label: 'X/Twitter' },
   { icon: Mail, href: emailComposeUrl, label: 'Email' },
+  { icon: Linkedin, href: 'https://linkedin.com/in/shaniprajapatiii', label: 'LinkedIn' },
+  { icon: Github, href: 'https://github.com/shaniprajapatiii', label: 'GitHub' },
+  { icon: Instagram, href: 'https://instagram.com/shaniprajapatiii', label: 'Instagram' },
 ];
 
 const ContactSection = () => {

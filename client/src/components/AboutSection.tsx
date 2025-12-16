@@ -3,8 +3,8 @@ import { FileText, Mail, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const skills = [
-  'React', 'TypeScript', 'Node.js', 'Python', 
-  'UI/UX', 'GraphQL', 'AWS', 'Docker'
+  'Java', 'React', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 
+  'UI/UX', 'Express.js', 'Postman', 'Docker'
 ];
 
 const AboutSection = () => {

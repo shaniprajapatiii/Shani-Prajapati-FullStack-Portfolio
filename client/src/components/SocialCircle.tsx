@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Github, Linkedin, Twitter, Mail, Share2 } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail, Share2 } from 'lucide-react';
+
+
+const emailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+  'shaniprajapati630@gmail.com'
+)}&su=${encodeURIComponent('')}&body=${encodeURIComponent('')}`;
+
 
 const socials = [
-  { icon: Github, href: 'https://github.com', label: 'GitHub', color: 'var(--primary)' },
-  { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn', color: 'var(--neon-blue)' },
-  { icon: Twitter, href: 'https://twitter.com', label: 'X/Twitter', color: 'var(--secondary)' },
-  { icon: Mail, href: 'mailto:hello@example.com', label: 'Email', color: 'var(--accent)' },
+  { icon: Instagram, href: 'https://instagram.com/shaniprajapatiii', label: 'Instagram', color: 'var(--secondary)' },
+  { icon: Github, href: 'https://github.com/shaniprajapatiii', label: 'GitHub', color: 'var(--primary)' },
+  { icon: Linkedin, href: 'https://linkedin.com/in/shaniprajapatiii', label: 'LinkedIn', color: 'var(--neon-blue)' },
+  { icon: Mail, href: emailComposeUrl, label: 'Email', color: 'var(--accent)' },
 ];
 
 const SocialCircle = () => {

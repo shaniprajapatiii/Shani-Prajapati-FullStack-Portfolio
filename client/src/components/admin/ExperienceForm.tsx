@@ -83,10 +83,10 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.company.trim()) {
+    if (!formData.title.trim() || !formData.company.trim() || !formData.startDate) {
       toast({
         title: 'Error',
-        description: 'Title and company are required',
+        description: 'Title, company, and start date are required',
         variant: 'destructive',
       });
       return;
@@ -94,7 +94,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({
 
     const dataToSend = {
       ...formData,
-      endDate: formData.isCurrently ? null : formData.endDate,
+      endDate: formData.isCurrently ? undefined : (formData.endDate || undefined),
       responsibilities: formData.responsibilities.filter(r => r.trim()),
     };
 

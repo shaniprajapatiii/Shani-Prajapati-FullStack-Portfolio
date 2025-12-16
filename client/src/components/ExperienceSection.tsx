@@ -13,32 +13,33 @@ interface Education {
 
 const education: Education[] = [
   {
-    degree: "Bachelor's in Computer Science",
-    institution: 'Tech University',
-    date: '2014 - 2018',
+    degree: "Bachelor's in Computer Science and Information Technology",
+    institution: 'G L Bajaj Institute of Technology and Management',
+    date: '2024 - Present',
     highlights: [
-      'Graduated with First Class Honours (GPA: 3.8/4.0)',
-      'Specialized in Software Engineering & Web Technologies',
-      'Led university coding club and organized hackathons',
+      'Currently a second-year undergraduate student',
+      'Strong foundation in Data Structures, Algorithms, and Web Technologies',
+      'Developed multiple full-stack projects using the MERN stack',
+      'Maintaining academic record (GPA: 8.4/10.0)',
     ],
   },
   {
     degree: 'Higher Secondary (12th Grade)',
-    institution: 'City Science College',
-    date: '2012 - 2014',
+    institution: 'J U Memorial Inter College',
+    date: '2022 - 2023',
     highlights: [
-      'Science stream with Computer Science major',
-      'Scored 92% in board examinations',
-      'Won state-level programming competition',
+      'Completed higher secondary education with a focus on Mathematics and Science',
+      'Scored 94% in board examinations',
+      'Developed strong analytical and problem-solving skills',
     ],
   },
   {
     degree: 'Secondary School (10th Grade)',
-    institution: 'Central High School',
-    date: '2012',
+    institution: 'J U Memorial Inter College',
+    date: '2020 - 2021',
     highlights: [
-      'Completed with distinction (89%)',
-      'First introduction to programming with C++',
+      'Completed secondary education with a strong academic record (87.33%)',
+      'Built a solid foundation in Mathematics, Science, and Computer Basics',
       'Active member of science and math clubs',
     ],
   },
@@ -426,6 +427,9 @@ const ExperienceSection = () => {
           ))}
         </div>
 
+        {/* Anchor for Certifications nav link */}
+        <div id="certificates" className="h-0" aria-hidden />
+
         {/* Education & Certifications Section */}
         <motion.div
           className="mt-24"
@@ -572,6 +576,7 @@ const ExperienceSection = () => {
             ) : (
               <motion.div
                 key="certifications"
+                id="certificates"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
