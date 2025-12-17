@@ -21,11 +21,10 @@ server/.env
 client/.env
 server/.env.*
 client/.env.*
+.env.*
 
 # Config files with sensitive data
 **/config.js
-server/src/config/env.ts
-client/src/config.ts
 
 # IDE and OS files
 .DS_Store
