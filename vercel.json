@@ -4,9 +4,14 @@
   "installCommand": "npm install",
   "framework": "vite",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/admin", "destination": "/index.html" },
+    { "source": "/admin/dashboard", "destination": "/index.html" },
+    { "source": "/admin/skills", "destination": "/index.html" },
+    { "source": "/admin/experience", "destination": "/index.html" },
+    { "source": "/admin/projects", "destination": "/index.html" },
+    { "source": "/admin/certificates", "destination": "/index.html" },
+    { "source": "/admin/messages", "destination": "/index.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
