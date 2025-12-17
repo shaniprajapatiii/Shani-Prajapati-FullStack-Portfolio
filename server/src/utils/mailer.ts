@@ -109,7 +109,7 @@ export const sendContactConfirmation = async (
       
       <p style="margin-top: 30px; color: #555;">
         Best regards,<br>
-        Sankalp Prajapati
+        Shani Prajapati
       </p>
       
       <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
