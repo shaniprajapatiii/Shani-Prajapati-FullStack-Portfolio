@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
@@ -13,6 +13,7 @@ import AdminSkills from "./pages/AdminSkills";
 import AdminExperience from "./pages/AdminExperience";
 import AdminProjects from "./pages/AdminProjects";
 import AdminCertificates from "./pages/AdminCertificates";
+import AdminMessages from "./pages/AdminMessages";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <AdminCertificates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/messages"
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminMessages />
                 </ProtectedRoute>
               }
             />

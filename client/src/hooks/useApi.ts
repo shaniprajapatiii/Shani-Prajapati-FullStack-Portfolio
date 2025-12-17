@@ -12,8 +12,7 @@ import {
   transformExperience,
   transformCertificate,
 } from '../lib/formatters';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from '@/lib/api';
 
 interface UseQueryState<T> {
   data: T[] | null;

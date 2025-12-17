@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useSkills } from '@/hooks/useApi';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Plus, Edit, Trash2, LogOut } from 'lucide-react';
+import GridBackground from '@/components/GridBackground';
+import { motion } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,14 +29,21 @@ interface Skill {
   order?: number;
 }
 
-export const AdminSkills = () => {
+const AdminSkills = () => {
   const { data: skills, loading: dataLoading, refetch } = useSkills();
   const { remove, loading: deleteLoading } = useAuthenticatedApi();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [formOpen, setFormOpen] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState<Skill | null>(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin');
+  };
 
   const handleAdd = () => {
     setSelectedSkill(null);
@@ -72,81 +83,121 @@ export const AdminSkills = () => {
 
   if (dataLoading) {
     return (
-      <div className="p-6">
-        <div className="text-center text-gray-500">Loading skills...</div>
-      </div>
+      <GridBackground>
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <div className="text-center text-muted-foreground">Loading skills...</div>
+        </div>
+      </GridBackground>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/admin/dashboard">← Dashboard</Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Manage Skills</h1>
-        </div>
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          + Add Skill
-        </Button>
-      </div>
+    <GridBackground>
+      <div className="min-h-screen p-6 pt-20">
+        <motion.div 
+          className="max-w-6xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Header */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin/dashboard')}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <h1 className="font-display text-3xl font-bold text-foreground">Manage Skills</h1>
+            </div>
+            <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+              <span className="text-sm text-muted-foreground truncate max-w-[220px] sm:max-w-none">
+                {user?.email}
+              </span>
+              <Button
+                onClick={handleLogout}
+                variant="destructive"
+                size="sm"
+                className="gap-2 w-full sm:w-auto justify-center"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
 
-      {skills && skills.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {skills.map(skill => (
-            <Card key={skill._id} className="hover:shadow-lg transition">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                  <span className="text-3xl">{skill.icon}</span>
-                  <span>{skill.name}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Category</p>
-                  <p className="font-medium">{skill.category}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Color</p>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-6 h-6 rounded border"
-                      style={{ backgroundColor: skill.color }}
-                    />
-                    <p className="font-mono text-sm">{skill.color}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(skill)}
-                    className="flex-1"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => openDeleteConfirm(skill)}
-                    className="flex-1"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
+          <div className="flex justify-end mb-6">
+            <Button onClick={handleAdd} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Add Skill
+            </Button>
+          </div>
+
+          {/* Skills Grid */}
+          {skills && skills.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {skills.map(skill => (
+                <Card key={skill._id} className="bg-card/50 border-primary/20 hover:border-primary/40 transition-all">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2">
+                      <span className="text-3xl">{skill.icon}</span>
+                      <span>{skill.name}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <p>Category</p>
+                      <p className="font-medium text-foreground">{skill.category}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Color</p>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-6 h-6 rounded border border-primary/30"
+                          style={{ backgroundColor: skill.color }}
+                        />
+                        <p className="font-mono text-sm text-muted-foreground">{skill.color}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 pt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(skill)}
+                        className="flex-1 gap-2"
+                      >
+                        <Edit className="w-3 h-3" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => openDeleteConfirm(skill)}
+                        className="flex-1 gap-2"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-card/50 border-primary/20 p-8 text-center">
+              <p className="text-muted-foreground mb-4">No skills yet. Add your first skill!</p>
+              <Button onClick={handleAdd} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add First Skill
+              </Button>
             </Card>
-          ))}
-        </div>
-      ) : (
-        <Card className="p-8 text-center">
-          <p className="text-gray-500 mb-4">No skills yet. Add your first skill!</p>
-          <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-            Add First Skill
-          </Button>
-        </Card>
-      )}
+          )}
+        </motion.div>
+      </div>
 
       {/* Skill Form Dialog */}
       <SkillForm
@@ -171,14 +222,14 @@ export const AdminSkills = () => {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleteLoading}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-destructive hover:bg-destructive/90"
             >
-              {deleteLoading ? 'Deleting...' : 'Delete'}
+              Delete
             </AlertDialogAction>
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </GridBackground>
   );
 };
 

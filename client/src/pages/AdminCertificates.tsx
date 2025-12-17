@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useCertificates } from '@/hooks/useApi';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Plus, Edit, Trash2, ExternalLink, LogOut } from 'lucide-react';
+import GridBackground from '@/components/GridBackground';
+import { motion } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,14 +33,21 @@ interface Certificate {
   verificationUrl?: string;
 }
 
-export const AdminCertificates = () => {
+const AdminCertificates = () => {
   const { data: certificates, loading: dataLoading, refetch } = useCertificates();
   const { remove, loading: deleteLoading } = useAuthenticatedApi();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [formOpen, setFormOpen] = useState(false);
   const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [certToDelete, setCertToDelete] = useState<Certificate | null>(null);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin');
+  };
 
   const handleAdd = () => {
     setSelectedCert(null);
@@ -76,130 +87,172 @@ export const AdminCertificates = () => {
 
   if (dataLoading) {
     return (
-      <div className="p-6">
-        <div className="text-center text-gray-500">Loading certificates...</div>
-      </div>
+      <GridBackground>
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <div className="text-center text-muted-foreground">Loading certificates...</div>
+        </div>
+      </GridBackground>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/admin/dashboard">← Dashboard</Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Manage Certificates</h1>
-        </div>
-        <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-          + Add Certificate
-        </Button>
-      </div>
+    <GridBackground>
+      <div className="min-h-screen p-6 pt-20">
+        <motion.div 
+          className="max-w-6xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
 
-      {certificates && certificates.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {certificates.map(cert => (
-            <Card
-              key={cert._id}
-              className="hover:shadow-lg transition overflow-hidden"
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/admin/dashboard')}
+              className="gap-2"
             >
-              <div
-                className={`h-1 bg-gradient-to-r ${cert.gradient}`}
-              />
-              <CardHeader>
-                <CardTitle className="text-lg">{cert.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Issuer</p>
-                    <p className="font-medium text-sm">{cert.issuer}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Issue Date</p>
-                    <p className="font-medium text-sm">
-                      {formatDate(cert.issueDate)}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    Description
-                  </p>
-                  <p className="text-sm line-clamp-2">{cert.description}</p>
-                </div>
-
-                {cert.skills && cert.skills.length > 0 && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      Skills
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {cert.skills.map((skill, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded text-xs"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {cert.highlights && cert.highlights.length > 0 && (
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      Highlights
-                    </p>
-                    <ul className="list-disc pl-4 space-y-0.5">
-                      {cert.highlights.slice(0, 2).map((highlight, idx) => (
-                        <li key={idx} className="text-xs">
-                          {highlight}
-                        </li>
-                      ))}
-                      {cert.highlights.length > 2 && (
-                        <li className="text-xs text-gray-500">
-                          +{cert.highlights.length - 2} more
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-
-                <div className="flex gap-2 pt-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(cert)}
-                    className="flex-1"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => openDeleteConfirm(cert)}
-                    className="flex-1"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
+            <h1 className="font-display text-3xl font-bold text-foreground">Manage Certificates</h1>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+            <span className="text-sm text-muted-foreground truncate max-w-[220px] sm:max-w-none">
+              {user?.email}
+            </span>
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              size="sm"
+              className="gap-2 w-full sm:w-auto justify-center"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+          </div>
         </div>
-      ) : (
-        <Card className="p-8 text-center">
-          <p className="text-gray-500 mb-4">No certificates yet. Add your first certificate!</p>
-          <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700">
-            Add First Certificate
-          </Button>
-        </Card>
-      )}
 
-      {/* Certificate Form Dialog */}
+        <div className="space-y-6">
+          {/* Add Certificate Button */}
+          <div className="flex justify-end">
+            <Button onClick={handleAdd} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Add Certificate
+            </Button>
+          </div>
+
+          {/* Certificates Grid */}
+          {certificates && certificates.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {certificates.map(cert => (
+                <Card
+                  key={cert._id}
+                  className="bg-card/50 border-primary/20 hover:border-primary/40 transition overflow-hidden"
+                >
+                  <div
+                    className={`h-1 bg-gradient-to-r ${cert.gradient}`}
+                  />
+                  <CardHeader>
+                    <CardTitle className="text-lg text-foreground">{cert.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Issuer</p>
+                        <p className="font-medium text-sm text-foreground">{cert.issuer}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Issue Date</p>
+                        <p className="font-medium text-sm text-foreground">
+                        {formatDate(cert.issueDate)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Description
+                      </p>
+                      <p className="text-sm line-clamp-2 text-foreground">{cert.description}</p>
+                    </div>
+
+                    {cert.skills && cert.skills.length > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Skills
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {cert.skills.map((skill, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-primary/10 border border-primary/30 text-primary rounded text-xs"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {cert.highlights && cert.highlights.length > 0 && (
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Highlights
+                        </p>
+                        <ul className="list-disc pl-4 space-y-0.5">
+                          {cert.highlights.slice(0, 2).map((highlight, idx) => (
+                            <li key={idx} className="text-xs text-foreground">
+                              {highlight}
+                            </li>
+                          ))}
+                          {cert.highlights.length > 2 && (
+                            <li className="text-xs text-muted-foreground">
+                              +{cert.highlights.length - 2} more
+                            </li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2 pt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(cert)}
+                        className="flex-1 gap-2"
+                      >
+                        <Edit className="w-3 h-3" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => openDeleteConfirm(cert)}
+                        className="flex-1 gap-2"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-card/50 border-primary/20 p-8 text-center">
+              <p className="text-muted-foreground mb-4">No certificates yet. Add your first certificate!</p>
+              <Button onClick={handleAdd} className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add First Certificate
+              </Button>
+            </Card>
+          )}
+        </div>
+
+        {/* Certificate Form Dialog */}
       <CertificateForm
         open={formOpen}
         onOpenChange={setFormOpen}
@@ -229,7 +282,9 @@ export const AdminCertificates = () => {
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+        </motion.div>
+      </div>
+    </GridBackground>
   );
 };
 

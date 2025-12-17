@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Github, Linkedin, Mail, Instagram } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { API_BASE_URL } from '@/lib/api';
 const OWNER_EMAIL = 'shaniprajapati630@gmail.com';
 
 const emailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
@@ -30,7 +31,7 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${API_BASE_URL}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

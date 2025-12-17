@@ -9,11 +9,12 @@ import { env } from './config/env';
 import { errorHandler, notFound } from './middleware/errorHandler';
 
 const app = express();
+app.set('trust proxy', 1); // trust Render's proxy so secure cookies work
 
-// Allow multiple dev origins (localhost and 127.0.0.1) with credentials
-const allowedOrigins = Array.isArray(env.corsOrigin)
-	? env.corsOrigin
-	: [env.corsOrigin, 'http://127.0.0.1:5173'];
+// Allow multiple origins via CORS_ORIGINS env (comma-separated) with credentials
+const allowedOrigins = Array.isArray(env.corsOrigins)
+	? env.corsOrigins
+	: [env.corsOrigins, 'http://127.0.0.1:5173'];
 
 app.use(
 	cors({

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,14 +7,35 @@ import { useSkills } from '@/hooks/useApi';
 import { useExperience } from '@/hooks/useApi';
 import { useProjects } from '@/hooks/useApi';
 import { useCertificates } from '@/hooks/useApi';
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+import { LogOut, FileText, Briefcase, Award, MessageSquare, Code, LayoutDashboard, Mail } from 'lucide-react';
+import GridBackground from '@/components/GridBackground';
+import { motion } from 'framer-motion';
 
-export const AdminDashboard = () => {
+const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { getById } = useAuthenticatedApi();
   const { data: skills } = useSkills();
   const { data: experience } = useExperience();
   const { data: projects } = useProjects();
   const { data: certificates } = useCertificates();
+  const [messagesCount, setMessagesCount] = useState(0);
+
+  useEffect(() => {
+    fetchMessagesCount();
+  }, []);
+
+  const fetchMessagesCount = async () => {
+    try {
+      const data = await getById<{ success: boolean; data: Array<any> }>('/messages');
+      if (data && data.data) {
+        setMessagesCount(data.data.length);
+      }
+    } catch (error) {
+      console.error('Error fetching messages count:', error);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -46,41 +67,53 @@ export const AdminDashboard = () => {
       color: 'from-orange-500 to-yellow-500',
       route: '/admin/certificates',
     },
+    {
+      title: 'Messages',
+      count: messagesCount,
+      color: 'from-cyan-500 to-blue-600',
+      route: '/admin/messages',
+    },
   ];
 
   return (
-    <div className="min-h-screen relative">
-      {/* Neon grid background for consistency with main site */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,hsl(var(--primary)/0.08)_0,transparent_30%),radial-gradient(circle_at_80%_0%,hsl(var(--secondary)/0.08)_0,transparent_30%),radial-gradient(circle_at_50%_80%,hsl(var(--accent)/0.08)_0,transparent_30%)]" />
-
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-card/80 backdrop-blur border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="font-display text-3xl font-bold">
-                <span className="text-neon-glow">Admin</span>{' '}
-                <span className="text-foreground">Dashboard</span>
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Welcome, {user?.name || user?.email}
-              </p>
+    <GridBackground>
+      <div className="min-h-screen p-6 pt-20">
+        <motion.div 
+          className="max-w-6xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Header */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-12">
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-foreground">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/30">
+                  <LayoutDashboard className="w-5 h-5 text-primary" />
+                </span>
+                <h1 className="font-display text-4xl font-bold">Admin Dashboard</h1>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/60 px-3 py-1">
+                  <Mail className="w-4 h-4 text-primary" />
+                  <span className="text-foreground/80">{user?.email ?? 'admin@example.com'}</span>
+                </span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">Welcome back, {user?.name || 'Admin'}</span>
+              </div>
             </div>
             <Button
               variant="destructive"
               onClick={handleLogout}
-              className="shadow-[0_0_20px_hsl(var(--primary)/0.2)]"
+              className="gap-2 w-full sm:w-auto justify-center"
             >
+              <LogOut className="w-4 h-4" />
               Logout
             </Button>
           </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mb-12">
           {stats.map(stat => (
             <Card
               key={stat.title}
@@ -152,6 +185,14 @@ export const AdminDashboard = () => {
                 <span className="text-2xl">🏆</span>
                 <span>Add Certificate</span>
               </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/admin/messages')}
+                className="h-20 flex-col gap-2 hover:bg-primary/10"
+              >
+                <span className="text-2xl">📧</span>
+                <span>View Messages</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -182,8 +223,9 @@ export const AdminDashboard = () => {
             </CardContent>
           </Card>
         </div>
+        </motion.div>
       </div>
-    </div>
+    </GridBackground>
   );
 };
 

@@ -3,6 +3,7 @@ import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { API_BASE_URL } from '@/lib/api';
 import {
   Dialog,
   DialogContent,
@@ -37,7 +38,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
 }) => {
   const { create, update, loading, error } = useAuthenticatedApi();
   const { toast } = useToast();
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     title: project?.title || '',
     slug: project?.slug || '',

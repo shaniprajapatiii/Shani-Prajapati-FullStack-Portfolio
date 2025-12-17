@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from '@/lib/api';
 
 interface ApiResponse<T> {
   success: boolean;

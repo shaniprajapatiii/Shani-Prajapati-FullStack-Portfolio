@@ -7,7 +7,7 @@ import { env, isProd } from '../config/env';
 
 const cookieOptions = (maxAgeMs: number) => ({
   httpOnly: true,
-  sameSite: 'lax' as const,
+  sameSite: isProd ? ('none' as const) : ('lax' as const),
   secure: isProd,
   maxAge: maxAgeMs,
 });
@@ -66,8 +66,26 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
 
 export const logout = (_req: Request, res: Response) => {
   res
-    .clearCookie('accessToken', { httpOnly: true, sameSite: 'lax', secure: isProd })
-    .clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax', secure: isProd })
+  .clearCookie('accessToken', { httpOnly: true, sameSite: isProd ? 'none' : 'lax', secure: isProd })
+  .clearCookie('refreshToken', { httpOnly: true, sameSite: isProd ? 'none' : 'lax', secure: isProd })
     .status(200)
     .json({ message: 'Logged out' });
+};
+
+export const getMe = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const user = await User.findById(req.user.sub);
+    if (!user) return next(new ApiError(401, 'User not found'));
+
+    res.status(200).json({
+      user: {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        name: user.email,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
