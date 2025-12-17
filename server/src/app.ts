@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 import routes from './routes';
 import { env } from './config/env';
 import { errorHandler, notFound } from './middleware/errorHandler';
@@ -38,7 +39,15 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Serve static files from client build
+app.use(express.static(path.join(__dirname, '../../client/dist')));
+
 app.use('/api', routes);
+
+// SPA fallback: serve index.html for all non-API routes
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+});
 
 app.use(notFound);
 app.use(errorHandler);
