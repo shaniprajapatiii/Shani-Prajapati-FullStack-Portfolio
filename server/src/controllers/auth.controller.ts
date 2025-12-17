@@ -36,7 +36,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       .cookie('accessToken', accessToken, { ...cookieOptions(ACCESS_MAX_AGE) })
       .cookie('refreshToken', refreshToken, { ...cookieOptions(REFRESH_MAX_AGE) })
       .status(200)
-      .json({ user: { email: user.email, role: 'admin' } });
+      .json({ user: { email: user.email, role: 'admin' }, accessToken });
   } catch (err) {
     next(err);
   }
@@ -58,7 +58,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       .cookie('accessToken', accessToken, { ...cookieOptions(ACCESS_MAX_AGE) })
       .cookie('refreshToken', refreshToken, { ...cookieOptions(REFRESH_MAX_AGE) })
       .status(200)
-      .json({ user: { email: user.email, role: user.role } });
+      .json({ user: { email: user.email, role: user.role }, accessToken });
   } catch (err) {
     next(new ApiError(401, 'Unauthorized'));
   }

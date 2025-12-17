@@ -10,6 +10,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -21,6 +22,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('accessToken');
+    } catch {
+      return null;
+    }
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   // Check if user is logged in on mount
@@ -31,8 +39,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkAuth = async () => {
     try {
       setIsLoading(true);
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       const response = await fetch(`${API_BASE_URL}/auth/me`, {
         credentials: 'include',
+        headers,
       });
 
       if (response.ok) {
@@ -68,6 +79,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const data = await response.json();
       setUser(data.user);
+      if (data.accessToken) {
+        setToken(data.accessToken);
+        try { localStorage.setItem('accessToken', data.accessToken); } catch {}
+      }
     } catch (error) {
       setUser(null);
       throw error;
@@ -84,6 +99,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         credentials: 'include',
       });
       setUser(null);
+      setToken(null);
+      try { localStorage.removeItem('accessToken'); } catch {}
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
@@ -94,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     isAuthenticated: !!user,
+    token,
     isLoading,
     login,
     logout,

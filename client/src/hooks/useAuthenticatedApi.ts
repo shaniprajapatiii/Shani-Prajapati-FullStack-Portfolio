@@ -9,7 +9,7 @@ interface ApiResponse<T> {
 }
 
 export const useAuthenticatedApi = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -34,6 +34,7 @@ export const useAuthenticatedApi = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         credentials: 'include',
         body: JSON.stringify(data),
@@ -62,6 +63,9 @@ export const useAuthenticatedApi = () => {
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         credentials: 'include',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
@@ -91,6 +95,7 @@ export const useAuthenticatedApi = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         credentials: 'include',
         body: JSON.stringify(data),
@@ -120,6 +125,9 @@ export const useAuthenticatedApi = () => {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
