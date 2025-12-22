@@ -16,26 +16,33 @@ const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { getById } = useAuthenticatedApi();
-  const { data: skills } = useSkills();
-  const { data: experience } = useExperience();
-  const { data: projects } = useProjects();
-  const { data: certificates } = useCertificates();
+  const { data: skills, loading: skillsLoading } = useSkills();
+  const { data: experience, loading: expLoading } = useExperience();
+  const { data: projects, loading: projLoading } = useProjects();
+  const { data: certificates, loading: certLoading } = useCertificates();
   const [messagesCount, setMessagesCount] = useState(0);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
+  // Fetch all data in parallel
   useEffect(() => {
-    fetchMessagesCount();
-  }, []);
-
-  const fetchMessagesCount = async () => {
-    try {
-      const data = await getById<{ success: boolean; data: Array<any> }>('/messages');
-      if (data && data.data) {
-        setMessagesCount(data.data.length);
+    const fetchAllData = async () => {
+      try {
+        setMessagesLoading(true);
+        const data = await getById<{ success: boolean; data: Array<any> }>('/messages');
+        if (data && data.data) {
+          setMessagesCount(data.data.length);
+        }
+      } catch (error) {
+        console.error('Error fetching messages count:', error);
+      } finally {
+        setMessagesLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching messages count:', error);
-    }
-  };
+    };
+
+    fetchAllData();
+  }, [getById]);
+
+  const isLoading = skillsLoading || expLoading || projLoading || certLoading || messagesLoading;
 
   const handleLogout = async () => {
     await logout();
