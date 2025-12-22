@@ -6,9 +6,13 @@ import { toast } from 'sonner';
 import { API_BASE_URL } from '@/lib/api';
 const OWNER_EMAIL = 'shaniprajapati630@gmail.com';
 
-const emailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-  OWNER_EMAIL
-)}&su=${encodeURIComponent('')}&body=${encodeURIComponent('')}`;
+// Detect if mobile device
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Mobile: open email app, Desktop: open Gmail web
+const emailComposeUrl = isMobile 
+  ? `mailto:${OWNER_EMAIL}`
+  : `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(OWNER_EMAIL)}`;
 
 const socials = [
   { icon: Mail, href: emailComposeUrl, label: 'Email' },

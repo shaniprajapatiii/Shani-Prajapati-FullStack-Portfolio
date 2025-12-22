@@ -2,6 +2,16 @@ import { motion } from 'framer-motion';
 import { FileText, Mail, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const OWNER_EMAIL = 'shaniprajapati630@gmail.com';
+
+// Detect if mobile device
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Mobile: open email app, Desktop: open Gmail web
+const emailComposeUrl = isMobile 
+  ? `mailto:${OWNER_EMAIL}`
+  : `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(OWNER_EMAIL)}`;
+
 const skills = [
   'Java', 'React', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 
   'UI/UX', 'Express.js', 'Postman', 'Docker'
@@ -145,23 +155,22 @@ const AboutSection = () => {
             {/* CTA buttons */}
             <div className="flex flex-wrap gap-4 pt-4">
               <motion.a
-                href="#"
+                href="https://drive.google.com/file/d/1gQW_TO3ZpEoQPqCiyq1JuVjrp_0rqp91/view" 
+                target='_blank'
                 className="btn-neon flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <FileText className="w-4 h-4" />
-                Download Resume
+                View Resume
               </motion.a>
               <motion.a
-                href="#contact"
+                href={emailComposeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn-secondary flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
               >
                 <Mail className="w-4 h-4" />
                 Get In Touch
